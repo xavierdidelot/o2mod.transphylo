@@ -1,0 +1,81 @@
+---
+title: "Introduction to o2mod.transphylo"
+author: "Xavier Didelot"
+date: "`r Sys.Date()`"
+output:
+   rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  fig.width=8, 
+  fig.height=5, 
+  fig.path="figs-introduction/"
+)
+```
+
+##Initialisation
+
+```{r}
+rm(list=ls())
+library(ape)
+library(outbreaker2)
+library(TransPhylo)
+library(o2mod.transphylo)
+set.seed(0)
+```
+
+##Data
+
+We consider a random timed tree with 5 leaves. Time is measured discretely, in units of days.
+
+```{r}
+nsam <- 5
+phy <- rtree(nsam, br=rexp)
+phy$tip.label <- 1:nsam
+phy$edge.length <- round(phy$edge.length * 365)
+plot(phy)
+axisPhylo()
+```
+
+The outbreaker2 dataset includes the sampling dates and the generation time
+distribution.  The genetic data is empty, but we attach the phylogenetic tree
+itself.  This is because the TransPhylo model works by inferring the
+transmission tree based on a phylogenetic tree rather the genetic data
+itself. For real datasets, the phylogenetic tree needs to be reconstructed, for
+example using BEAST.
+
+```{r}
+library(distcrete)
+dates <- dist.nodes(phy)[nsam+1,1:nsam]
+si <- distcrete("gamma", shape = 2, scale = 0.5 * 365, interval = 1L, w = 0)
+w <- si$d(1:(2*max(dates)))
+data <- outbreaker_data(dates = dates, w_dens = w, dna = as.DNAbin(matrix('A',nsam,1)))
+data$ptree <- ptreeFromPhylo(phy,max(dates))
+```
+
+##Results
+
+```{r}
+res=outbreaker_transphylo(data)
+```
+
+```{r}
+plot(res,type='alpha',burnin=0.1*length(res$step))
+```
+
+Infection dates:
+```{r}
+plot(res, type = 't_inf', burnin = 0.1 * max(res$step))
+```
+
