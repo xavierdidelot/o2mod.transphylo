@@ -39,7 +39,7 @@ library("o2mod.transphylo")
 Documentation
 -------------
 
-See introduction vignette [here](http://rpubs.com/XavierDidelot/introo2modtransphylo)
+See introduction vignette [here](http://htmlpreview.github.io/?https://github.com/xavierdidelot/o2mod.transphylo/blob/master/vignettes/introduction.html)
 
 Authors
 -------
