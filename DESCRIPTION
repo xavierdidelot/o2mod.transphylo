@@ -1,10 +1,19 @@
 Package: o2mod.transphylo
 Title: outbreaker2 module using the TransPhylo model
 Version: 0.0.0.9000
-Authors@R: person("Xavier", "Didelot", email = "xavier.didelot@gmail.com", role = c("aut", "cre"))
+Authors@R: c(person("Xavier", "Didelot",
+                    email = "xavier.didelot@gmail.com",
+		    role = c("aut", "cre")), 
+	     person("Finlay", "Campbell",
+	            email = "f.campbell15@imperial.ac.uk",
+		    role = c("aut")),
+	     person("Thibaut", "Jombart",
+	            email = "thibautjombart@gmail.com",
+		    role = c("aut")))
+Maintainer: Xavier Didelot <xavier.didelot@gmail.com>
 Description: This is an outbreaker2 module using the TransPhylo model.
 Depends:
-    R (>= 3.3.2)
+    R (>= 3.0.0)
 Imports:
     outbreaker2,
     TransPhylo
@@ -14,3 +23,4 @@ LazyData: true
 RoxygenNote: 5.0.1
 URL: https://github.com/xavierdidelot/o2mod.transphylo
 BugReports: https://github.com/xavierdidelot/o2mod.transphylo/issues
+VignetteBuilder: knitr

@@ -25,7 +25,7 @@ library("o2mod.transphylo")
 Documentation
 -------------
 
-See introduction [vignette](http://whereisthis/)
+See introduction vignette [here](http://rpubs.com/XavierDidelot/introo2modtransphylo)
 
 Authors
 -------
