@@ -67,7 +67,7 @@ data$ptree <- ptreeFromPhylo(phy,max(dates))
 ##Results
 
 ```{r}
-res=outbreaker_transphylo(data)
+res=o2mod.transphylo(data)
 ```
 
 ```{r}
