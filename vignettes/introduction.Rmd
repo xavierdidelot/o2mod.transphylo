@@ -27,7 +27,6 @@ knitr::opts_chunk$set(
 ##Initialisation
 
 ```{r}
-rm(list=ls())
 library(ape)
 library(outbreaker2)
 library(TransPhylo)
@@ -66,10 +65,16 @@ data$ptree <- ptreeFromPhylo(phy,max(dates))
 
 ##Results
 
+Let's run outbreaker2 using the o2mod.transphylo module:
 ```{r}
 res=o2mod.transphylo(data)
 ```
+Trace of the posterior probability:
+```{r}
+plot(res)
+```
 
+Ancestry matrix:
 ```{r}
 plot(res,type='alpha',burnin=0.1*length(res$step))
 ```
@@ -79,3 +84,19 @@ Infection dates:
 plot(res, type = 't_inf', burnin = 0.1 * max(res$step))
 ```
 
+We can extract the transmission tree in the last state of the MCMC, combine it with the phylogeny and visualize the resulting colored tree:
+
+```{r}
+tinf <- rep(0, nsam);
+alpha <- rep(0, nsam)
+for (i in 1:nsam) {
+  alpha[i] <- tail(res[[8 + i]],1)
+  tinf[i] <- tail(res[[8 + nsam+i]],1)
+}
+
+alpha[which(is.na(alpha))] <- 0
+ttree <- list(ttree = cbind(tinf, data$dates, alpha),
+              nam = data$ptree$nam)
+ctree <- combine(ttree, data$ptree)
+plotCTree(ctree)
+```
