@@ -4,17 +4,19 @@
 #' @param sample_every Thining interval
 #' @return results of the run as an outbreaker2 output object
 #' @export
-o2mod.transphylo <- function(data, config = NULL, priors = NULL,
-                             likelihoods = NULL, moves = NULL) {
+o2mod.transphylo <- function(data,
+                             config = NULL,
+                             priors = NULL,
+                             likelihoods = NULL,
+                             moves = NULL) {
   lik_TransPhylo <- function(data, param) {
-    ttree <- list(
-      ttree = cbind(param$t_inf, data$dates, param$alpha),
-      nam = data$ptree$nam
-    )
+    ttree <- list(ttree = cbind(param$t_inf, data$dates, param$alpha),
+                  nam = data$ptree$nam)
     ttree$ttree[which(is.na(ttree$ttree[, 3])), 3] <- 0
     txt <- utils::capture.output(ctree <- combine(ttree, data$ptree))
-    if (length(txt) > 0)
+    if (length(txt) > 0) {
       return(-Inf)
+    }
     return(TransPhylo::probPTreeGivenTTree(ctree, neg = 365 * 0.25))
   }
 
@@ -29,31 +31,28 @@ o2mod.transphylo <- function(data, config = NULL, priors = NULL,
   }
 
   api <- outbreaker2::get_cpp_api()
-  def_likelihoods <-
-    outbreaker2::custom_likelihoods(genetic = lik_TransPhylo)
-  new_move_tinf <-
-    function(param, data, list_custom_ll = def_likelihoods) {
-      for (i in 1:data$N) {
-        current_ll <- api$cpp_ll_all(data, param, i = NULL, list_custom_ll)
-        modif <- sample(c(-100:-1, 1:100), 1)
-        param$t_inf[i] <- param$t_inf[i] + modif
-        current_alpha <- param$alpha
-        param$alpha <-
-          deduceAlpha(data$ptree, data$dates, param$alpha, param$t_inf)
-        new_ll <-
-          api$cpp_ll_all(data, param, i = NULL, list_custom_ll)
-        if (log(stats::runif(1)) > (new_ll - current_ll)) {
-          param$t_inf[i] <- param$t_inf[i] - modif
-          param$alpha <- current_alpha
-        }
+  def_likelihoods <- outbreaker2::custom_likelihoods(genetic = lik_TransPhylo)
+  new_move_tinf <- function(param, data, list_custom_ll = def_likelihoods) {
+    for (i in 1:data$N) {
+      current_ll <- api$cpp_ll_all(data, param, i = NULL, list_custom_ll)
+      modif <- sample(c(-100:-1, 1:100), 1)
+      param$t_inf[i] <- param$t_inf[i] + modif
+      current_alpha <- param$alpha
+      param$alpha <- deduceAlpha(data$ptree, data$dates,
+                                 param$alpha, param$t_inf)
+      new_ll <- api$cpp_ll_all(data, param, i = NULL, list_custom_ll)
+      if (log(stats::runif(1)) > (new_ll - current_ll)) {
+        param$t_inf[i] <- param$t_inf[i] - modif
+        param$alpha <- current_alpha
       }
-      return(param)
     }
+    return(param)
+  }
   def_moves <- outbreaker2::custom_moves(t_inf = new_move_tinf)
 
   init_tree <- c(NA, rep(1, length(data$dates) - 1))
-  init_t_inf <-
-    c(min(data$ptree$ptree[, 1]) - 1, data$dates[2:length(data$dates)] - 1)
+  init_t_inf <- c(min(data$ptree$ptree[, 1]) - 1,
+                  data$dates[2:length(data$dates)] - 1)
 
   def_config <- outbreaker2::create_config(init_tree = init_tree,
                                            init_t_inf = init_t_inf,
@@ -81,7 +80,7 @@ o2mod.transphylo <- function(data, config = NULL, priors = NULL,
   }
 
   if(!is.null(c(config, priors, likelihoods, moves))) {
-    warning("Modifying default settings may lead to unexpected behaviour, use with caution")
+    warning("Modifying default settings may lead to unexpected behaviour; use with caution")
   }
   
   config <- replace_def(def_config, config)
@@ -93,4 +92,7 @@ o2mod.transphylo <- function(data, config = NULL, priors = NULL,
                                  config = config,
                                  likelihoods = likelihoods,
                                  moves = moves)
+
+  return(res)
+  
 }
