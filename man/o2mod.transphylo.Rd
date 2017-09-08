@@ -4,19 +4,29 @@
 \alias{o2mod.transphylo}
 \title{Run outbreaker2 using the TransPhylo model}
 \usage{
-o2mod.transphylo(data, n_iter = 1000, sample_every = 1)
+o2mod.transphylo(data, config = NULL, priors = NULL, likelihoods = NULL,
+  moves = NULL)
 }
 \arguments{
-\item{data}{Data}
+\item{data}{a list of named items containing input data as returned by
+\code{\link[outbreaker2]{outbreaker_data}}, with an additional item
+\code{ptree} providing the phylogenetic tree}
 
-\item{n_iter}{Number of iterations}
+\item{config}{a set of settings as returned by
+\code{\link[outbreaker2]{create_config}}}
 
-\item{sample_every}{Thining interval}
+\item{priors}{a set of log-prior functions as returned by
+\code{\link[outbreaker2]{custom_priors}}}
+
+\item{likelihoods}{a set of log-likelihood functions as returned by
+\code{\link[outbreaker2]{custom_likelihoods}}}
+
+\item{moves}{a set of movement functions as returned by
+\code{\link[outbreaker2]{custom_moves}}}
 }
 \value{
-results of the run as an outbreaker2 output object
+an \code{outbreaker_chains} object
 }
 \description{
 Run outbreaker2 using the TransPhylo model
 }
-

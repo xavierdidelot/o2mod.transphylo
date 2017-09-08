@@ -1,8 +1,23 @@
 #' Run outbreaker2 using the TransPhylo model
-#' @param data Data
-#' @param n_iter Number of iterations
-#' @param sample_every Thining interval
-#' @return results of the run as an outbreaker2 output object
+#' 
+#' @param data a list of named items containing input data as returned by
+#'     \code{\link[outbreaker2]{outbreaker_data}}, with an additional item
+#'     \code{ptree} providing the phylogenetic tree
+#'
+#' @param config a set of settings as returned by
+#'   \code{\link[outbreaker2]{create_config}}
+#'
+#' @param likelihoods a set of log-likelihood functions as returned by
+#'     \code{\link[outbreaker2]{custom_likelihoods}}
+#'
+#' @param priors a set of log-prior functions as returned by
+#'     \code{\link[outbreaker2]{custom_priors}}
+#'
+#' @param moves a set of movement functions as returned by
+#'     \code{\link[outbreaker2]{custom_moves}}
+#' 
+#' @return an \code{outbreaker_chains} object
+#' 
 #' @export
 o2mod.transphylo <- function(data,
                              config = NULL,

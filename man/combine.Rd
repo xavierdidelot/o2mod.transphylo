@@ -17,4 +17,3 @@ colored tree
 \description{
 Combine a transmission tree and a phylogeny into a colored phylogeny
 }
-
