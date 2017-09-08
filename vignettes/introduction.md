@@ -37,8 +37,8 @@ library(distcrete)
 dates <- dist.nodes(phy)[nsam+1,1:nsam]
 si <- distcrete("gamma", shape = 2, scale = 0.5 * 365, interval = 1L, w = 0)
 w <- si$d(1:(2*max(dates)))
-data <- outbreaker_data(dates = dates, w_dens = w, dna = as.DNAbin(matrix('A',nsam,1)))
-data$ptree <- ptreeFromPhylo(phy, max(dates))
+data <- outbreaker_data(dates = dates, w_dens = w, dna = as.DNAbin(matrix('A',nsam,1)), 
+                        ptree = ptreeFromPhylo(phy, max(dates)))
 ```
 
 Results
