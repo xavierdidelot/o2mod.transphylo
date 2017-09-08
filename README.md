@@ -5,8 +5,6 @@ o2mod.transphylo: an outbreaker2 module using the TransPhylo model
 
 *o2mod.transphylo* is a module of [*outbreaker2*](https://github.com/reconhub/outbreaker2) which uses the [*TransPhylo*](https://github.com/xavierdidelot/TransPhylo) model of within-host evolution.
 
-<br>
-
 Installation
 ------------
 
@@ -25,7 +23,13 @@ library("o2mod.transphylo")
 Documentation
 -------------
 
-See introduction vignette [here](http://htmlpreview.github.io/?https://github.com/xavierdidelot/o2mod.transphylo/blob/master/vignettes/introduction.html)
+Once loaded, the package provides a function `o2mod.transphylo()` which takes the same parameters as the `outbreaker()` function of the `outbreaker2` package, so for example if `data` is an outbreaker2 input object, analysis under the TransPhylo model can be carried out using:
+
+``` r
+result <- o2mod.transphylo(data)
+```
+
+For more details, see the [introductory vignette](https://github.com/xavierdidelot/o2mod.transphylo/blob/master/vignettes/introduction.md) on o2mod.transphylo.
 
 Authors
 -------

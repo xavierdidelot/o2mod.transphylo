@@ -1,25 +1,12 @@
----
-title: "Introduction to o2mod.transphylo"
-author: "Xavier Didelot"
-date: "`r Sys.Date()`"
-output: 
-  github_document:
-    html_preview: false
----
+Introduction to o2mod.transphylo
+================
+Xavier Didelot
+2017-09-08
 
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>", 
-  fig.width=8, 
-  fig.height=5,
-  fig.path = 'figs-introduction/'
-)
-```
+Initialisation
+--------------
 
-##Initialisation
-
-```{r}
+``` r
 library(ape)
 library(outbreaker2)
 library(TransPhylo)
@@ -27,11 +14,12 @@ library(o2mod.transphylo)
 set.seed(0)
 ```
 
-##Data
+Data
+----
 
 We consider a random timed tree with 5 leaves. Time is measured discretely, in units of days.
 
-```{r}
+``` r
 nsam <- 5
 phy <- rtree(nsam, br = rexp)
 phy$tip.label <- 1:nsam
@@ -40,14 +28,11 @@ plot(phy)
 axisPhylo()
 ```
 
-The outbreaker2 dataset includes the sampling dates and the generation time
-distribution.  The genetic data is empty, but we attach the phylogenetic tree
-itself.  This is because the TransPhylo model works by inferring the
-transmission tree based on a phylogenetic tree rather the genetic data
-itself. For real datasets, the phylogenetic tree needs to be reconstructed, for
-example using BEAST.
+![](figs-introduction/unnamed-chunk-3-1.png)
 
-```{r}
+The outbreaker2 dataset includes the sampling dates and the generation time distribution. The genetic data is empty, but we attach the phylogenetic tree itself. This is because the TransPhylo model works by inferring the transmission tree based on a phylogenetic tree rather the genetic data itself. For real datasets, the phylogenetic tree needs to be reconstructed, for example using BEAST.
+
+``` r
 library(distcrete)
 dates <- dist.nodes(phy)[nsam+1,1:nsam]
 si <- distcrete("gamma", shape = 2, scale = 0.5 * 365, interval = 1L, w = 0)
@@ -56,30 +41,43 @@ data <- outbreaker_data(dates = dates, w_dens = w, dna = as.DNAbin(matrix('A',ns
 data$ptree <- ptreeFromPhylo(phy, max(dates))
 ```
 
-##Results
+Results
+-------
 
 Let's run outbreaker2 using the o2mod.transphylo module:
-```{r}
+
+``` r
 res <- o2mod.transphylo(data)
+#> Warning in log(data$log_w_dens): NaNs produced
 ```
+
 Trace of the posterior probability:
-```{r}
+
+``` r
 plot(res)
 ```
 
+![](figs-introduction/unnamed-chunk-6-1.png)
+
 Ancestry matrix:
-```{r}
+
+``` r
 plot(res,type = 'alpha', burnin = 0.1*length(res$step))
 ```
 
+![](figs-introduction/unnamed-chunk-7-1.png)
+
 Infection dates:
-```{r}
+
+``` r
 plot(res, type = 't_inf', burnin = 0.1 * max(res$step))
 ```
 
+![](figs-introduction/unnamed-chunk-8-1.png)
+
 We can extract the transmission tree in the last state of the MCMC, combine it with the phylogeny and visualize the resulting colored tree:
 
-```{r}
+``` r
 tinf <- rep(0, nsam)
 alpha <- rep(0, nsam)
 for (i in 1:nsam) {
@@ -93,3 +91,5 @@ ttree <- list(ttree = cbind(tinf, data$dates, alpha),
 ctree <- combine(ttree, data$ptree)
 plotCTree(ctree)
 ```
+
+![](figs-introduction/unnamed-chunk-9-1.png)
