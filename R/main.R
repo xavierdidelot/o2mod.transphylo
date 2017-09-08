@@ -9,6 +9,7 @@ o2mod.transphylo <- function(data,
                              priors = NULL,
                              likelihoods = NULL,
                              moves = NULL) {
+  
   lik_TransPhylo <- function(data, param) {
     ttree <- list(ttree = cbind(param$t_inf, data$dates, param$alpha),
                   nam = data$ptree$nam)
@@ -24,14 +25,13 @@ o2mod.transphylo <- function(data,
     ttree <- list(ttree = cbind(t_inf, dates, alpha), nam = ptree$nam)
     ttree$ttree[which(is.na(ttree$ttree[, 3])), 3] <- 0
     txt <- utils::capture.output(ctree <- combine(ttree, ptree))
-    if (length(txt) > 0 && nchar(txt) > 9)
+    if (length(txt) > 0 && nchar(txt) > 9) {
       return(alpha)
+    }
     alpha2 = TransPhylo::extractTTree(ctree)$ttree[, 3]
     return(replace(alpha2, alpha2 == 0, NA))
   }
-
-  api <- outbreaker2::get_cpp_api()
-  def_likelihoods <- outbreaker2::custom_likelihoods(genetic = lik_TransPhylo)
+ 
   new_move_tinf <- function(param, data, list_custom_ll = def_likelihoods) {
     for (i in 1:data$N) {
       current_ll <- api$cpp_ll_all(data, param, i = NULL, list_custom_ll)
@@ -48,12 +48,14 @@ o2mod.transphylo <- function(data,
     }
     return(param)
   }
-  def_moves <- outbreaker2::custom_moves(t_inf = new_move_tinf)
 
   init_tree <- c(NA, rep(1, length(data$dates) - 1))
   init_t_inf <- c(min(data$ptree$ptree[, 1]) - 1,
                   data$dates[2:length(data$dates)] - 1)
 
+  api <- outbreaker2::get_cpp_api()
+
+  ## Define default settings for o2mod.transphylo
   def_config <- outbreaker2::create_config(init_tree = init_tree,
                                            init_t_inf = init_t_inf,
                                            init_kappa = 1,
@@ -69,9 +71,11 @@ o2mod.transphylo <- function(data,
                                            move_swap_cases = TRUE,
                                            move_t_inf = TRUE,
                                            move_kappa = FALSE)
-  
   def_priors <- outbreaker2::custom_priors()
+  def_likelihoods <- outbreaker2::custom_likelihoods(genetic = lik_TransPhylo)
+  def_moves <- outbreaker2::custom_moves(t_inf = new_move_tinf)
 
+  ## Function to replace default settings with custom settings, if specificed
   replace_def <- function(default, custom) {
     for(i in names(custom)) {
       default[[i]] <- custom[[i]]
@@ -90,6 +94,7 @@ o2mod.transphylo <- function(data,
   
   res <- outbreaker2::outbreaker(data = data,
                                  config = config,
+                                 prior = priors,
                                  likelihoods = likelihoods,
                                  moves = moves)
 
