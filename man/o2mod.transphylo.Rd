@@ -4,8 +4,13 @@
 \alias{o2mod.transphylo}
 \title{Run outbreaker2 using the TransPhylo model}
 \usage{
-o2mod.transphylo(data, config = NULL, priors = NULL, likelihoods = NULL,
-  moves = NULL)
+o2mod.transphylo(
+  data,
+  config = NULL,
+  priors = NULL,
+  likelihoods = NULL,
+  moves = NULL
+)
 }
 \arguments{
 \item{data}{a list of named items containing input data as returned by

@@ -29,7 +29,7 @@ set.seed(0)
 
 ##Data
 
-We consider a random timed tree with 5 leaves. Time is measured discretely, in units of days.
+We consider a random dated tree with five leaves. Time is measured discretely, in units of days.
 
 ```{r}
 nsam <- 5

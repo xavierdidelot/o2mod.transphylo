@@ -1,5 +1,5 @@
 #' Run outbreaker2 using the TransPhylo model
-#' 
+#'
 #' @param data a list of named items containing input data as returned by
 #'     \code{\link[outbreaker2]{outbreaker_data}}, with an additional item
 #'     \code{ptree} providing the phylogenetic tree
@@ -15,25 +15,25 @@
 #'
 #' @param moves a set of movement functions as returned by
 #'     \code{\link[outbreaker2]{custom_moves}}
-#' 
+#'
 #' @return an \code{outbreaker_chains} object
-#' 
+#'
 #' @export
 o2mod.transphylo <- function(data,
                              config = NULL,
                              priors = NULL,
                              likelihoods = NULL,
                              moves = NULL) {
-  
+
   lik_TransPhylo <- function(data, param) {
     ttree <- list(ttree = cbind(param$t_inf, data$dates, param$alpha),
                   nam = data$ptree$nam)
     ttree$ttree[which(is.na(ttree$ttree[, 3])), 3] <- 0
-    txt <- utils::capture.output(ctree <- combine(ttree, data$ptree))
-    if (length(txt) > 0) {
-      return(-Inf)
-    }
-    return(TransPhylo::probPTreeGivenTTree(ctree, neg = 365 * 0.25))
+    prob=-Inf
+    try({txt <- utils::capture.output(ctree <- combine(ttree, data$ptree))
+    if (length(txt) == 0) prob<-TransPhylo::probPTreeGivenTTree(ctree$ctree, neg = 365 * 0.25)
+    },silent=T)
+    return(prob)
   }
 
   deduceAlpha <- function(ptree, dates, alpha, t_inf) {
@@ -46,7 +46,7 @@ o2mod.transphylo <- function(data,
     alpha2 = TransPhylo::extractTTree(ctree)$ttree[, 3]
     return(replace(alpha2, alpha2 == 0, NA))
   }
- 
+
   new_move_tinf <- function(param, data, list_custom_ll = def_likelihoods) {
     for (i in 1:data$N) {
       current_ll <- api$cpp_ll_all(data, param, i = NULL, list_custom_ll)
@@ -90,7 +90,7 @@ o2mod.transphylo <- function(data,
   def_likelihoods <- outbreaker2::custom_likelihoods(genetic = lik_TransPhylo)
   def_moves <- outbreaker2::custom_moves(t_inf = new_move_tinf)
 
-  ## Function to replace default settings with custom settings, if specificed
+  ## Function to replace default settings with custom settings, if specified
   replace_def <- function(default, custom) {
     for(i in names(custom)) {
       default[[i]] <- custom[[i]]
@@ -101,18 +101,18 @@ o2mod.transphylo <- function(data,
   if(!is.null(c(config, priors, likelihoods, moves))) {
     warning("Modifying default settings may lead to unexpected behaviour; use with caution")
   }
-  
+
   config <- replace_def(def_config, config)
   priors <- replace_def(def_priors, priors)
   likelihoods <- replace_def(def_likelihoods, likelihoods)
   moves <- replace_def(def_moves, moves)
-  
-  res <- outbreaker2::outbreaker(data = data,
+
+  res <- outbreaker2::outbreaker(data = data ,
                                  config = config,
-                                 prior = priors,
+                                 priors = priors,
                                  likelihoods = likelihoods,
                                  moves = moves)
 
   return(res)
-  
+
 }

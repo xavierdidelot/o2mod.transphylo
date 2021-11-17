@@ -57,7 +57,7 @@ combine <- function(ttree, ptree) {
   }
   tree <- tree[c(1:n, n + ind), ]
   tree <-
-    cbind(tree, TransPhylo:::.computeHost(tree))#note access to hidden internal function
+    cbind(tree, suppressWarnings(TransPhylo:::.computeHost(tree)))#note access to hidden internal function
   ctree = list(ctree = tree, nam = nam)
   ttree2 = TransPhylo::extractTTree(ctree)
   if (any(ttree2$ttree[, 3] != ttree[, 3])) {
