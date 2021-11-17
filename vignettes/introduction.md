@@ -3,7 +3,7 @@ Introduction to o2mod.transphylo
 Xavier Didelot
 2021-11-17
 
-\#\#Initialisation
+##Initialisation
 
 ``` r
 library(ape)
