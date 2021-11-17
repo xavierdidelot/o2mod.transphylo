@@ -3,7 +3,7 @@ Introduction to o2mod.transphylo
 Xavier Didelot
 2021-11-17
 
-##Initialisation
+## Initialisation
 
 ``` r
 library(ape)
@@ -13,7 +13,7 @@ library(o2mod.transphylo)
 set.seed(0)
 ```
 
-\#\#Data
+## Data
 
 We consider a random dated tree with five leaves. Time is measured
 discretely, in units of days.
@@ -45,7 +45,7 @@ data <- outbreaker_data(dates = dates, w_dens = w, dna = as.DNAbin(matrix('A',ns
 data$ptree <- ptreeFromPhylo(phy, max(dates))
 ```
 
-\#\#Results
+## Results
 
 Let’s run outbreaker2 using the o2mod.transphylo module:
 
